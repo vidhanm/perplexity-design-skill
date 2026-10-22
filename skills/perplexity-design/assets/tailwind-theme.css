@@ -1,0 +1,73 @@
+/*
+ * perplexity-design — Tailwind CSS v4 theme
+ *
+ *   @import "tailwindcss";
+ *   @import "./tokens.css";
+ *   @import "./tailwind-theme.css";
+ *
+ * Maps the tokens to utilities: bg-raised, bg-subtle, text-secondary, border-hairline,
+ * rounded-card, font-serif, font-answer, shadow-composer, font-ui-medium…
+ * tokens.css is unlayered, so its --font-* values override Tailwind's defaults and
+ * font-sans / font-serif / font-mono use the brand faces automatically.
+ */
+@theme inline {
+  --color-*: initial; /* every colour comes from the tokens, never Tailwind's palette */
+  --color-base: var(--bg-base);
+  --color-raised: var(--bg-raised);
+  --color-underlay: var(--bg-underlay);
+  --color-subtle: var(--bg-subtle);
+  --color-soft: var(--bg-soft);
+  --color-inverse: var(--bg-inverse);
+  --color-backdrop: var(--bg-backdrop);
+  --color-primary: var(--fg-primary);
+  --color-secondary: var(--fg-secondary);
+  --color-tertiary: var(--fg-tertiary);
+  --color-disabled: var(--fg-disabled);
+  --color-on-inverse: var(--fg-inverse);
+  --color-hairline: var(--border-soft);
+  --color-edge: var(--border-base);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-warning: var(--warning);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --radius-chip: 6px;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-input: 16px;
+  --radius-section: 24px;
+  --radius-media: 32px;
+
+  --text-3xs: 10px;
+  --text-3xs--line-height: 13.75px;
+  --text-2xs: 11px;
+  --text-2xs--line-height: 11px;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Families that Tailwind has no default name for */
+@utility font-display { font-family: var(--font-display); }
+@utility font-answer { font-family: var(--font-answer); }
+@utility leading-answer { line-height: 26px; }
+
+/* Theme-aware weights: dark mode thins them (400 → 360, 500 → 470…) */
+@utility font-ui-regular { font-weight: var(--weight-regular); }
+@utility font-ui-medium { font-weight: var(--weight-medium); }
+@utility font-ui-semibold { font-weight: var(--weight-semibold); }
+@utility font-ui-bold { font-weight: var(--weight-bold); }
+@utility font-serif-regular { font-weight: var(--weight-serif-regular); }
+
+/* Elevation: floating layers only */
+@utility shadow-panel { box-shadow: var(--shadow-sm); }
+@utility shadow-panel-hover { box-shadow: var(--shadow-sm-hover); }
+@utility shadow-float { box-shadow: var(--shadow-md); }
+@utility shadow-composer { box-shadow: var(--shadow-composer); }
+@utility shadow-composer-focus { box-shadow: var(--shadow-composer-focus); }
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

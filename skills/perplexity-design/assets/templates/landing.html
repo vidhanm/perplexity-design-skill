@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acme — Answers you can check</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..500&family=Source+Serif+4:opsz,wght@8..60,300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../tokens.css" />
+  <link rel="stylesheet" href="../base.css" />
+  <link rel="stylesheet" href="../components.css" />
+  <style>
+    /* Marketing (Persuade mode): same tokens, bigger serif, slower rhythm. */
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--space-8); }
+
+    /* Nav: 64 tall, pill links in secondary ink, tonal pill CTA */
+    .nav { position: sticky; top: 0; z-index: 20; background: var(--bg-base); border-bottom: 1px solid var(--border-soft); }
+    .nav .wrap { display: flex; align-items: center; height: 64px; gap: var(--space-2); }
+    .logo { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-xl); font-weight: var(--weight-medium); letter-spacing: -0.01em; }
+    .logo .icon { width: 22px; height: 22px; }
+    .nav .links { margin-left: auto; display: flex; gap: var(--space-1); }
+    .nav .links a { padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); font-size: var(--text-base); font-weight: var(--weight-medium); color: var(--fg-secondary); transition: background-color var(--dur-color) var(--ease-standard), color var(--dur-color) var(--ease-standard); }
+    .nav .links a:hover { background: var(--bg-subtle); color: var(--fg-primary); }
+
+    /* Hero: serif claim left, real product right */
+    .hero { padding: var(--space-32) 0 var(--space-24); }
+    .hero .wrap { display: grid; grid-template-columns: 1fr 1.1fr; gap: var(--space-16); align-items: center; }
+    .hero h1 { font-family: var(--font-serif); font-size: var(--text-4xl); line-height: 1.05; font-weight: var(--weight-serif-regular); letter-spacing: -0.01em; text-wrap: balance; }
+    .hero .sub { margin-top: var(--space-5); max-width: 34em; font-size: var(--text-base); line-height: var(--leading-base); color: var(--fg-secondary); }
+    .ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-8); }
+
+    /* Hero media: the product itself, framed — no abstract blobs */
+    .shot { border-radius: var(--radius-media); background: var(--bg-subtle); border: 1px solid var(--border-soft); padding: var(--space-8); }
+    .shot .composer { margin-bottom: var(--space-5); }
+    .shot .composer textarea { min-height: 40px; }
+    .shot .answer { background: var(--bg-raised); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: var(--space-5); }
+    .shot .answer .prose p { margin: 0; }
+
+    /* Proof line */
+    .proof { padding: var(--space-12) 0; border-block: 1px solid var(--border-soft); }
+    .proof .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-6); }
+    .proof p { font-size: var(--text-sm); color: var(--fg-secondary); }
+    .proof .names { display: flex; flex-wrap: wrap; gap: var(--space-10); font-family: var(--font-serif); font-size: var(--text-xl); color: var(--fg-tertiary); }
+
+    /* Feature sections: one idea each, alternating, inside a soft panel */
+    .section { padding: var(--space-32) 0; }
+    .panel { border-radius: var(--radius-section); background: var(--bg-subtle); padding: var(--space-24) var(--space-16); display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-16); align-items: center; }
+    .panel + .panel { margin-top: var(--space-6); }
+    .panel.flip > :first-child { order: 2; }
+    .h2 { font-family: var(--font-serif); font-size: var(--text-3xl); line-height: 1.12; font-weight: var(--weight-serif-regular); letter-spacing: -0.01em; text-wrap: balance; }
+    .lede { margin-top: var(--space-4); color: var(--fg-secondary); max-width: 32em; }
+    .points { margin-top: var(--space-6); display: grid; gap: var(--space-3); padding: 0; list-style: none; }
+    .points li { display: flex; gap: var(--space-3); font-size: var(--text-sm); line-height: var(--leading-sm); }
+    .points .icon { margin-top: 2px; color: var(--fg-secondary); }
+    .media { background: var(--bg-raised); border-radius: var(--radius-card); box-shadow: var(--shadow-sm); padding: var(--space-5); }
+    .media .source-item + .source-item { border-top: 1px solid var(--border-soft); border-radius: 0; }
+
+    /* Pricing */
+    .center { text-align: center; }
+    .center .lede { margin-inline: auto; }
+    .plans { margin-top: var(--space-12); display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+    .plan { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6); background: var(--bg-raised); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
+    .plan.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+    .plan h3 { font-size: var(--text-base); font-weight: var(--weight-medium); display: flex; align-items: center; gap: var(--space-2); }
+    .price { font-size: 30px; line-height: 36px; font-weight: var(--weight-medium); }
+    .price small { font-size: var(--text-xs); font-weight: var(--weight-regular); color: var(--fg-secondary); }
+    .plan ul { list-style: none; padding: 0; display: grid; gap: var(--space-2); flex: 1; }
+    .plan li { display: flex; gap: var(--space-2); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--fg-secondary); }
+    .plan .btn { width: 100%; }
+
+    /* FAQ: light serif heading, hairline-divided rows */
+    .faq { max-width: var(--thread-width); margin: var(--space-12) auto 0; }
+    .faq details { border-top: 1px solid var(--border-soft); }
+    .faq details:last-child { border-bottom: 1px solid var(--border-soft); }
+    .faq summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-5) 0; cursor: pointer; font-size: var(--text-base); font-weight: var(--weight-medium); }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary .icon { color: var(--fg-secondary); transition: transform var(--dur-color) var(--ease-standard); }
+    .faq details[open] summary .icon { transform: rotate(45deg); }
+    .faq details p { padding-bottom: var(--space-5); color: var(--fg-secondary); max-width: 40em; }
+
+    /* Closing: the ask box is the CTA */
+    .closing { padding: var(--space-32) 0; text-align: center; }
+    .closing .composer { max-width: var(--home-width); margin: var(--space-8) auto 0; text-align: left; }
+
+    footer { border-top: 1px solid var(--border-soft); padding: var(--space-10) 0; font-size: var(--text-sm); color: var(--fg-secondary); }
+    footer .wrap { display: flex; flex-wrap: wrap; gap: var(--space-6); justify-content: space-between; }
+    footer nav { display: flex; gap: var(--space-6); }
+    footer a:hover { color: var(--fg-primary); }
+
+    @media (max-width: 900px) {
+      .wrap { padding: 0 var(--page-gutter); }
+      .nav .links { display: none; }
+      .nav .wrap > .btn { margin-left: auto; }
+      .hero { padding: var(--space-16) 0 var(--space-12); }
+      .hero .wrap, .panel { grid-template-columns: 1fr; gap: var(--space-10); }
+      .hero h1 { font-size: 40px; }
+      .h2 { font-size: var(--text-2xl); }
+      .panel { padding: var(--space-12) var(--space-5); }
+      .panel.flip > :first-child { order: 0; }
+      .section { padding: var(--space-16) 0; }
+      .shot { padding: var(--space-4); border-radius: var(--radius-section); }
+      .plans { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-mark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
+    <symbol id="i-landmark" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/></symbol>
+  </svg>
+
+  <header class="nav">
+    <div class="wrap">
+      <a class="logo" href="#"><svg class="icon"><use href="#i-mark" /></svg>acme</a>
+      <nav class="links" aria-label="Main">
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="btn btn-tonal btn-lg btn-pill" href="#">Sign in</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <h1>Answers about your business, with the receipts attached</h1>
+          <p class="sub">Ask a question in plain words. Acme reads your docs, tickets and dashboards, answers in seconds, and shows every source it used.</p>
+          <div class="ctas">
+            <a class="btn btn-primary btn-xl" href="#">Start for free</a>
+            <a class="btn btn-outline btn-xl" href="#pricing">Compare plans</a>
+          </div>
+        </div>
+        <div class="shot" aria-label="Product preview">
+          <div class="composer">
+            <textarea rows="1" readonly aria-label="Example question">Why did churn rise in March?</textarea>
+            <div class="composer-toolbar"><span class="spacer"></span><span class="composer-submit"><svg class="icon"><use href="#i-arrow-up" /></svg></span></div>
+          </div>
+          <div class="answer">
+            <div class="prose"><p>Churn rose to 4.1% in March, mostly from annual plans that renewed after the February price change.<a class="cite" href="#">billing.export</a> Accounts that contacted support before renewal churned at half the rate.<a class="cite" href="#">zendesk<span class="more">+2</span></a></p></div>
+            <div class="answer-actions"><span class="sources-pill"><span class="favicons"><i></i><i></i><i></i></span>6 sources</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof" aria-label="Customers">
+      <div class="wrap">
+        <p>Trusted by teams who need to show their work</p>
+        <div class="names"><span>Northwind</span><span>Halcyon</span><span>Brightline</span><span>Fieldwork</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="wrap">
+        <div class="panel">
+          <div>
+            <h2 class="h2">Every answer cites where it came from</h2>
+            <p class="lede">Sources sit right after the claim they support. Hover one to see the passage, the date and how much to trust it.</p>
+            <ul class="points">
+              <li><svg class="icon"><use href="#i-check" /></svg>Links to the exact doc, row or ticket</li>
+              <li><svg class="icon"><use href="#i-check" /></svg>Flags answers that rest on a single source</li>
+              <li><svg class="icon"><use href="#i-check" /></svg>Never shows a source you can't open</li>
+            </ul>
+          </div>
+          <div class="media">
+            <a class="source-item" href="#">
+              <span class="source-domain"><svg class="icon"><use href="#i-landmark" /></svg>billing.export · Mar 31</span>
+              <span class="source-title">Renewals by plan, Q1</span>
+              <span class="source-snippet">Annual renewals in March: 212 due, 174 renewed. Monthly cancellations unchanged at 2.3%.</span>
+            </a>
+            <a class="source-item" href="#">
+              <span class="source-domain"><svg class="icon"><use href="#i-landmark" /></svg>zendesk · 3 tickets</span>
+              <span class="source-title">"Pricing change" tag, March</span>
+              <span class="source-snippet">Customers asked whether existing annual plans would move to the new price at renewal.</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="panel flip">
+          <div>
+            <h2 class="h2">Connect the tools you already use</h2>
+            <p class="lede">Docs, CRM, billing and support in one place to ask. Permissions carry over, so people only see answers from what they can already open.</p>
+          </div>
+          <div class="media">
+            <div class="list">
+              <div class="list-row"><span>Google Drive</span><span class="actions-spacer" style="flex:1"></span><span class="meta">Connected</span></div>
+              <div class="list-row"><span>Salesforce</span><span style="flex:1"></span><span class="meta">Connected</span></div>
+              <div class="list-row"><span>Stripe</span><span style="flex:1"></span><span class="badge">New</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="wrap center">
+        <h2 class="h2">Simple plans</h2>
+        <p class="lede">Start free. Upgrade when your team does.</p>
+        <div class="plans" style="text-align:left">
+          <div class="plan">
+            <h3>Free</h3>
+            <p class="price">$0 <small>/ month</small></p>
+            <ul><li><svg class="icon"><use href="#i-check" /></svg>100 questions a month</li><li><svg class="icon"><use href="#i-check" /></svg>2 connected tools</li></ul>
+            <a class="btn btn-outline btn-lg" href="#">Get started</a>
+          </div>
+          <div class="plan featured">
+            <h3>Team <span class="badge">Popular</span></h3>
+            <p class="price">$20 <small>/ person / month</small></p>
+            <ul><li><svg class="icon"><use href="#i-check" /></svg>Unlimited questions</li><li><svg class="icon"><use href="#i-check" /></svg>Every connector</li><li><svg class="icon"><use href="#i-check" /></svg>Shared threads</li></ul>
+            <a class="btn btn-primary btn-lg" href="#">Start a trial</a>
+          </div>
+          <div class="plan">
+            <h3>Enterprise</h3>
+            <p class="price">Custom</p>
+            <ul><li><svg class="icon"><use href="#i-check" /></svg>SSO and audit logs</li><li><svg class="icon"><use href="#i-check" /></svg>Data residency</li></ul>
+            <a class="btn btn-outline btn-lg" href="#">Talk to us</a>
+          </div>
+        </div>
+
+        <div class="faq" id="faq" style="text-align:left">
+          <details><summary>Does Acme train on our data?<svg class="icon"><use href="#i-plus" /></svg></summary><p>No. Your data is used to answer your questions and nothing else.</p></details>
+          <details><summary>What happens when sources disagree?<svg class="icon"><use href="#i-plus" /></svg></summary><p>Acme says so, and shows both sources side by side.</p></details>
+          <details><summary>Can I cancel any time?<svg class="icon"><use href="#i-plus" /></svg></summary><p>Yes. Plans are monthly unless you choose annual.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="wrap">
+        <h2 class="h2">Ask your first question</h2>
+        <form class="composer">
+          <label class="sr-only" for="q">Ask anything</label>
+          <textarea id="q" rows="2" placeholder="Ask anything about your business…"></textarea>
+          <div class="composer-toolbar"><span class="spacer"></span><button class="composer-submit" aria-label="Ask"><svg class="icon"><use href="#i-arrow-up" /></svg></button></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 Acme</span>
+      <nav aria-label="Footer"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Status</a><a href="#">Contact</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

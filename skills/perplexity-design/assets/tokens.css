@@ -1,0 +1,334 @@
+/*
+ * perplexity-design — tokens
+ *
+ * Values observed on perplexity.ai (logged out, October 2026) with computed
+ * styles, not guessed. One file is the whole palette, type and geometry.
+ *
+ * TO REBRAND: edit only the BRAND block below (grounds, inks, accent, fonts).
+ * Everything after it derives from those values, in light and dark.
+ *
+ * Theme: light by default; dark follows the OS, and data-theme="light|dark"
+ * on <html> forces either.
+ */
+
+/* ======================================================================
+   BRAND — edit these
+   ====================================================================== */
+:root {
+  /* Light: page ground, raised surfaces, text ink, fill ink, inverse buttons */
+  --brand-ground-light: #fbfbfb;
+  --brand-raised-light: #ffffff;
+  --brand-ink-light: #0b2833;      /* a teal-black: the brand hue at near-zero chroma */
+  --brand-fill-light: #1c1c1c;     /* fills stay neutral grey */
+  --brand-inverse-light: #252525;  /* primary buttons are charcoal, never the accent */
+
+  /* Dark: grounds lean cool, ink is a pale grey-blue */
+  --brand-ground-dark: #15191d;
+  --brand-raised-dark: #1a1e21;
+  --brand-underlay-dark: #0f1215;
+  --brand-ink-dark: #dadfe3;
+
+  /* Accent: a signature, used in a few places only (see references/tokens.md) */
+  --brand-accent-light: #016a71;
+  --brand-accent-hover-light: #0c4f54;
+  --brand-accent-active-light: #0f3639;
+  --brand-accent-dark: #4e99a3;
+  --brand-accent-hover-dark: #22808c;
+  --brand-accent-active-dark: #1a636c;
+
+  /* Status */
+  --brand-positive-light: #016b1d;
+  --brand-negative-light: #a23544;
+  --brand-warning-light: #97431a;
+  --brand-positive-dark: #539e55;
+  --brand-negative-dark: #dc6973;
+  --brand-warning-dark: #d57141;
+
+  /* Fonts. Perplexity's own faces (pplxSans, pplxSerif, GT Canon, pplxSansMono)
+     are proprietary; these are the closest open substitutes. See assets/fonts.md. */
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, Cambria, serif;
+  --font-display: "Instrument Serif", "Source Serif 4", ui-serif, Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Answers and reading text are serif by default; set to var(--font-sans) to opt out. */
+  --font-answer: var(--font-serif);
+}
+
+/* ======================================================================
+   DERIVED — leave alone; everything below follows the BRAND block
+   ====================================================================== */
+
+/* ---- Geometry, type, motion, layout (theme-independent) ---- */
+:root {
+  /* Radius: input surfaces round most, controls less, chips least */
+  --radius-chip: 6px;      /* citation chips, topic chips, badges */
+  --radius-control: 8px;   /* buttons, sidebar rows, menu items, inputs, tables */
+  --radius-card: 12px;     /* cards, popovers, menus, panels */
+  --radius-input: 16px;    /* composer, query bubble, follow-up rows, banners */
+  --radius-section: 24px;  /* marketing section panels */
+  --radius-media: 32px;    /* marketing hero media */
+  --radius-full: 9999px;   /* pills, icon buttons, segmented tracks */
+
+  /* Spacing: 4px base. Gaps carry meaning: 4–8 within, 12–16 between, 24–32 groups, 96–128 sections */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-24: 96px; --space-32: 128px;
+
+  /* Control heights */
+  --h-xs: 24px;   /* xs pill ("View plans") */
+  --h-sm: 32px;   /* chips, icon buttons, toolbar buttons, submit circle */
+  --h-md: 36px;   /* menu items */
+  --h-lg: 40px;   /* sidebar rows, auth buttons, nav CTA */
+  --h-xl: 56px;   /* marketing hero CTA, tabs */
+
+  /* Type scale: size / line-height. Chrome is 14/20; reading is 16/26 serif. */
+  --text-3xs: 10px;  --leading-3xs: 13.75px; /* citation chips (mono) */
+  --text-2xs: 11px;  --leading-2xs: 11px;    /* micro badge, tracked eyebrows */
+  --text-xs: 12px;   --leading-xs: 16px;     /* captions, meta, source domains */
+  --text-sm: 14px;   --leading-sm: 20px;     /* all UI chrome: rows, menus, tabs, buttons */
+  --text-base: 16px; --leading-base: 24px;   /* body, composer, follow-ups, query bubble */
+  --leading-answer: 26px;                     /* answer prose at 16px */
+  --text-lg: 18px;   --leading-lg: 28px;     /* answer h2 (serif semibold) */
+  --text-xl: 20px;   --leading-xl: 28px;     /* titles */
+  --text-2xl: 28px;  --leading-2xl: 36px;    /* serif headline, home heading 28/42 */
+  --text-3xl: 36px;  --leading-3xl: 44px;    /* section headings (marketing) */
+  --text-4xl: 48px;  --leading-4xl: 52px;    /* marketing h1 (serif) */
+  --text-5xl: 64px;  --leading-5xl: 66px;    /* display (condensed serif) */
+  --text-6xl: 80px;  --leading-6xl: 80px;
+  --tracking-display: -0.02em;               /* only display serifs are tracked; 20px and below sit at 0 */
+  --tracking-eyebrow: 0.05em;                /* 11px uppercase eyebrows only */
+
+  /* Motion: fast and damped; nothing bounces */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expo-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --dur-focus: 75ms;    /* composer focus ring, card hover shadow */
+  --dur-color: 150ms;   /* colour changes, popover/menu enter and exit */
+  --dur-button: 300ms;  /* buttons, tab indicator slide */
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --home-width: 640px;     /* home composer column */
+  --thread-width: 720px;   /* answer column */
+  --rail-width: 336px;     /* sources / context rail */
+  --page-gutter: 16px;     /* phone side padding */
+  --touch-target: 44px;
+}
+
+/* ---- Light theme (default) ---- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --ground: var(--brand-ground-light);
+  --raised: var(--brand-raised-light);
+  --underlay: color-mix(in srgb, var(--brand-fill-light) 6%, var(--brand-ground-light));
+  --ink: var(--brand-ink-light);
+  --fill: var(--brand-fill-light);
+  --inverse: var(--brand-inverse-light);
+  --accent-base: var(--brand-accent-light);
+  --accent-hover-base: var(--brand-accent-hover-light);
+  --accent-active-base: var(--brand-accent-active-light);
+  --positive: var(--brand-positive-light);
+  --negative: var(--brand-negative-light);
+  --warning: var(--brand-warning-light);
+  --shadow-tint: var(--brand-ink-light);
+
+  /* Alphas differ slightly by theme (measured) */
+  --alpha-secondary: 75%;
+  --alpha-subtle: 3.5%;
+  --alpha-soft: 7%;
+  --alpha-border: 15%;
+
+  /* Weights: dark mode thins every face ~10% so light-on-dark text doesn't bloom */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-serif-regular: 400;
+
+  --shadow-sm:
+    0 0 0 0.5px color-mix(in srgb, var(--shadow-tint) 5%, transparent),
+    0 1px 1px color-mix(in srgb, var(--shadow-tint) 5%, transparent),
+    0 0 2px color-mix(in srgb, var(--shadow-tint) 8%, transparent),
+    0 2px 6px -2px color-mix(in srgb, var(--shadow-tint) 8%, transparent);
+  --shadow-sm-hover:
+    0 0 0 0.5px color-mix(in srgb, var(--shadow-tint) 10%, transparent),
+    0 1px 1px color-mix(in srgb, var(--shadow-tint) 6%, transparent),
+    0 0 2px color-mix(in srgb, var(--shadow-tint) 10%, transparent),
+    0 2px 7px -2px color-mix(in srgb, var(--shadow-tint) 12%, transparent);
+  --shadow-md:
+    0 0 0 0.5px color-mix(in srgb, var(--shadow-tint) 8%, transparent),
+    0 1px 2px color-mix(in srgb, var(--shadow-tint) 1%, transparent),
+    0 2px 6px -2px color-mix(in srgb, var(--shadow-tint) 14%, transparent),
+    0 6px 20px -5px color-mix(in srgb, var(--shadow-tint) 10%, transparent);
+  --shadow-composer:
+    0 0 0 0.5px color-mix(in srgb, var(--shadow-tint) 10%, transparent),
+    0 1px 0 color-mix(in srgb, var(--shadow-tint) 2%, transparent),
+    0 1px 1px color-mix(in srgb, var(--shadow-tint) 1%, transparent),
+    0 0 2px color-mix(in srgb, var(--shadow-tint) 8%, transparent),
+    0 2px 4px -2px color-mix(in srgb, var(--shadow-tint) 16%, transparent);
+  --shadow-composer-focus:
+    0 0 0 0.5px color-mix(in srgb, var(--shadow-tint) 16%, transparent),
+    0 1px 0 color-mix(in srgb, var(--shadow-tint) 2%, transparent),
+    0 1px 2px color-mix(in srgb, var(--shadow-tint) 3%, transparent),
+    0 0 3px color-mix(in srgb, var(--shadow-tint) 10%, transparent),
+    0 4px 10px -4px color-mix(in srgb, var(--shadow-tint) 18%, transparent);
+}
+
+/* ---- Dark theme: forced, or following the OS unless forced light ---- */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: var(--brand-ground-dark);
+  --raised: var(--brand-raised-dark);
+  --underlay: var(--brand-underlay-dark);
+  --ink: var(--brand-ink-dark);
+  --fill: var(--brand-ink-dark);
+  --inverse: var(--brand-ink-dark);
+  --accent-base: var(--brand-accent-dark);
+  --accent-hover-base: var(--brand-accent-hover-dark);
+  --accent-active-base: var(--brand-accent-active-dark);
+  --positive: var(--brand-positive-dark);
+  --negative: var(--brand-negative-dark);
+  --warning: var(--brand-warning-dark);
+  --shadow-tint: #000000;
+  --alpha-secondary: 65%;
+  --alpha-subtle: 3%;
+  --alpha-soft: 6%;
+  --alpha-border: 14%;
+  --weight-regular: 360;
+  --weight-medium: 470;
+  --weight-semibold: 580;
+  --weight-bold: 690;
+  --weight-serif-regular: 350;
+  --shadow-sm:
+    inset 0 0.5px 0 color-mix(in srgb, #ffffff 5%, transparent),
+    inset 0 0 0 0.5px color-mix(in srgb, #ffffff 5%, transparent),
+    0 1px 2px color-mix(in srgb, #000000 24%, transparent),
+    0 0 2px color-mix(in srgb, #000000 19%, transparent),
+    0 1px 4px -1px color-mix(in srgb, #000000 14%, transparent);
+  --shadow-sm-hover:
+    inset 0 0.5px 0 color-mix(in srgb, #ffffff 8%, transparent),
+    inset 0 0 0 0.5px color-mix(in srgb, #ffffff 8%, transparent),
+    0 1px 2px color-mix(in srgb, #000000 26%, transparent),
+    0 0 3px color-mix(in srgb, #000000 20%, transparent),
+    0 2px 6px -1px color-mix(in srgb, #000000 18%, transparent);
+  --shadow-md:
+    inset 0 0.5px 0 color-mix(in srgb, #ffffff 7%, transparent),
+    inset 0 0 0 0.5px color-mix(in srgb, #ffffff 6%, transparent),
+    0 1px 3px color-mix(in srgb, #000000 26%, transparent),
+    0 1px 5px color-mix(in srgb, #000000 26%, transparent),
+    0 3px 12px -2px color-mix(in srgb, #000000 18%, transparent);
+  --shadow-composer:
+    inset 0 0.5px 0 color-mix(in srgb, #ffffff 5%, transparent),
+    inset 0 0 0 0.5px color-mix(in srgb, #ffffff 6%, transparent),
+    0 1px 2px color-mix(in srgb, #000000 24%, transparent),
+    0 0 2px color-mix(in srgb, #000000 19%, transparent),
+    0 1px 4px -1px color-mix(in srgb, #000000 14%, transparent);
+  --shadow-composer-focus:
+    inset 0 0.5px 0 color-mix(in srgb, #ffffff 8%, transparent),
+    inset 0 0 0 0.5px color-mix(in srgb, #ffffff 10%, transparent),
+    0 1px 2px color-mix(in srgb, #000000 26%, transparent),
+    0 0 3px color-mix(in srgb, #000000 22%, transparent),
+    0 2px 8px -2px color-mix(in srgb, #000000 20%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: var(--brand-ground-dark);
+    --raised: var(--brand-raised-dark);
+    --underlay: var(--brand-underlay-dark);
+    --ink: var(--brand-ink-dark);
+    --fill: var(--brand-ink-dark);
+    --inverse: var(--brand-ink-dark);
+    --accent-base: var(--brand-accent-dark);
+    --accent-hover-base: var(--brand-accent-hover-dark);
+    --accent-active-base: var(--brand-accent-active-dark);
+    --positive: var(--brand-positive-dark);
+    --negative: var(--brand-negative-dark);
+    --warning: var(--brand-warning-dark);
+    --shadow-tint: #000000;
+    --alpha-secondary: 65%;
+    --alpha-subtle: 3%;
+    --alpha-soft: 6%;
+    --alpha-border: 14%;
+    --weight-regular: 360;
+    --weight-medium: 470;
+    --weight-semibold: 580;
+    --weight-bold: 690;
+    --weight-serif-regular: 350;
+    --shadow-sm:
+      inset 0 0.5px 0 color-mix(in srgb, #ffffff 5%, transparent),
+      inset 0 0 0 0.5px color-mix(in srgb, #ffffff 5%, transparent),
+      0 1px 2px color-mix(in srgb, #000000 24%, transparent),
+      0 0 2px color-mix(in srgb, #000000 19%, transparent),
+      0 1px 4px -1px color-mix(in srgb, #000000 14%, transparent);
+    --shadow-sm-hover:
+      inset 0 0.5px 0 color-mix(in srgb, #ffffff 8%, transparent),
+      inset 0 0 0 0.5px color-mix(in srgb, #ffffff 8%, transparent),
+      0 1px 2px color-mix(in srgb, #000000 26%, transparent),
+      0 0 3px color-mix(in srgb, #000000 20%, transparent),
+      0 2px 6px -1px color-mix(in srgb, #000000 18%, transparent);
+    --shadow-md:
+      inset 0 0.5px 0 color-mix(in srgb, #ffffff 7%, transparent),
+      inset 0 0 0 0.5px color-mix(in srgb, #ffffff 6%, transparent),
+      0 1px 3px color-mix(in srgb, #000000 26%, transparent),
+      0 1px 5px color-mix(in srgb, #000000 26%, transparent),
+      0 3px 12px -2px color-mix(in srgb, #000000 18%, transparent);
+    --shadow-composer:
+      inset 0 0.5px 0 color-mix(in srgb, #ffffff 5%, transparent),
+      inset 0 0 0 0.5px color-mix(in srgb, #ffffff 6%, transparent),
+      0 1px 2px color-mix(in srgb, #000000 24%, transparent),
+      0 0 2px color-mix(in srgb, #000000 19%, transparent),
+      0 1px 4px -1px color-mix(in srgb, #000000 14%, transparent);
+    --shadow-composer-focus:
+      inset 0 0.5px 0 color-mix(in srgb, #ffffff 8%, transparent),
+      inset 0 0 0 0.5px color-mix(in srgb, #ffffff 10%, transparent),
+      0 1px 2px color-mix(in srgb, #000000 26%, transparent),
+      0 0 3px color-mix(in srgb, #000000 22%, transparent),
+      0 2px 8px -2px color-mix(in srgb, #000000 20%, transparent);
+  }
+}
+
+/* ---- Semantic roles: the only colour names components should use ---- */
+:root,
+[data-theme] {
+  /* Surfaces: two near-identical grounds plus ink-alpha layers, not a palette */
+  --bg-base: var(--ground);
+  --bg-raised: var(--raised);
+  --bg-underlay: var(--underlay);
+  --bg-subtle: color-mix(in srgb, var(--fill) var(--alpha-subtle), transparent);  /* hover, sidebar, bubbles, th */
+  --bg-soft: color-mix(in srgb, var(--fill) var(--alpha-soft), transparent);      /* citation chip, tonal button */
+  --bg-inverse: var(--inverse);                                                   /* primary buttons, submit */
+  --bg-backdrop: color-mix(in srgb, var(--ground) 70%, transparent);
+
+  /* Text: one ink at four strengths */
+  --fg-primary: var(--ink);
+  --fg-secondary: color-mix(in srgb, var(--ink) var(--alpha-secondary), transparent);
+  --fg-tertiary: color-mix(in srgb, var(--ink) 50%, transparent);
+  --fg-disabled: color-mix(in srgb, var(--ink) 20%, transparent);
+  --fg-inverse: var(--ground);
+
+  /* Hairlines: ink alphas */
+  --border-soft: color-mix(in srgb, var(--ink) 7%, transparent);                  /* dividers, cards, table rules */
+  --border-base: color-mix(in srgb, var(--ink) var(--alpha-border), transparent); /* outlined buttons, inputs */
+  --border-focus: color-mix(in srgb, var(--ink) 20%, transparent);
+
+  /* Accent */
+  --accent: var(--accent-base);
+  --accent-hover: var(--accent-hover-base);
+  --accent-active: var(--accent-active-base);
+  --accent-soft: color-mix(in srgb, var(--accent-base) 9%, transparent);
+  --accent-subtle: color-mix(in srgb, var(--accent-base) 5.5%, transparent);
+  --accent-selection: color-mix(in srgb, var(--accent-base) 22%, transparent);
+
+  --positive-soft: color-mix(in srgb, var(--positive) 9%, transparent);
+  --negative-soft: color-mix(in srgb, var(--negative) 9%, transparent);
+  --warning-soft: color-mix(in srgb, var(--warning) 9%, transparent);
+
+  /* Focus ring for keyboard users (Perplexity hides outlines; we keep an accessible ring) */
+  --focus-ring: 0 0 0 2px var(--bg-base), 0 0 0 4px color-mix(in srgb, var(--ink) 35%, transparent);
+}

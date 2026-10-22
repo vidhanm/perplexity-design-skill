@@ -1,0 +1,26 @@
+{
+  "skill_name": "perplexity-design",
+  "evals": [
+    {
+      "id": 1,
+      "name": "answer-engine-app",
+      "prompt": "Build a single-file HTML prototype (index.html, no build step) of an AI research assistant called Scout. Two states I can switch between: the home screen with the ask box, and an answer screen for the question \"Why are bond yields rising?\" showing the sources it used, the answer with citations, and follow-up questions. Make it look like Perplexity. Light and dark mode.",
+      "expected_output": "A single index.html that reads unmistakably as Perplexity: composer as hero on home, answer thread with source row, inline citations, follow-ups; restrained palette with one accent; correct type scale; both themes; works at phone width.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "marketing-landing",
+      "prompt": "make me a landing page for Ledger — it's an AI that answers questions about your company's finances (connects to QuickBooks, Stripe, your bank). want it to feel like perplexity's site, clean and confident, not like every other SaaS page. one html file pls",
+      "expected_output": "A single HTML landing page in Perplexity's marketing language: confident hero (search/ask as hero or headline), calm section rhythm, no SaaS card-kit clichés, restrained accent, good footer; responsive.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "rebrand-settings-library",
+      "prompt": "Our knowledge-base product is called Atlas. Brand colour is forest green #1F6F4A and we use Inter. Using the Perplexity design language but with OUR brand, build one HTML file with two views toggled by tabs: (1) a Library page listing past threads with search and filters, and (2) a Settings page (account, appearance, connected sources). Desktop and mobile.",
+      "expected_output": "A single HTML file using Perplexity's structure and restraint but Atlas's green and Inter in place of Perplexity's accent and fonts; library list and settings page feel like Perplexity's; responsive.",
+      "files": []
+    }
+  ]
+}

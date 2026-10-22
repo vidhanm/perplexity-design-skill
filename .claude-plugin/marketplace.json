@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "perplexity-design",
+  "description": "Perplexity-inspired design language for coding agents: measured tokens, screen recipes and a linter.",
+  "owner": { "name": "Vidhan Mertiya", "url": "https://github.com/vidhanm" },
+  "plugins": [
+    {
+      "name": "perplexity-design",
+      "source": "./",
+      "description": "Build app screens and marketing pages in Perplexity's design language, with swappable brand tokens.",
+      "category": "design",
+      "tags": ["design", "design-system", "tokens", "ui", "frontend", "tailwind"]
+    }
+  ]
+}

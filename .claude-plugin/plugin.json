@@ -1,0 +1,11 @@
+{
+  "name": "perplexity-design",
+  "displayName": "Perplexity Design",
+  "version": "1.0.0",
+  "description": "Build app screens and marketing pages in Perplexity's design language, with swappable brand tokens.",
+  "author": { "name": "Vidhan Mertiya", "url": "https://github.com/vidhanm" },
+  "homepage": "https://github.com/vidhanm/perplexity-design-skill",
+  "repository": "https://github.com/vidhanm/perplexity-design-skill",
+  "license": "MIT",
+  "keywords": ["design", "design-system", "perplexity", "tokens", "ui", "tailwind"]
+}

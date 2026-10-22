@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acme — Ask anything</title>
+  <!-- Open substitutes for Perplexity's in-house faces (see ../fonts.md) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..500&family=Source+Serif+4:opsz,wght@8..60,300..700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../tokens.css" />
+  <link rel="stylesheet" href="../base.css" />
+  <link rel="stylesheet" href="../components.css" />
+  <style>
+    /* Page layout only. Every value comes from tokens.css. */
+    .app { display: flex; min-height: 100dvh; }
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    .sidebar-top { display: flex; align-items: center; justify-content: space-between; height: var(--h-lg); padding: 0 var(--space-2); margin-bottom: var(--space-3); }
+    .brand { display: flex; align-items: center; gap: var(--space-2); font-weight: var(--weight-medium); font-size: var(--text-base); }
+    .brand .icon { width: 20px; height: 20px; }
+    .sidebar nav { display: flex; flex-direction: column; gap: 1px; }
+    .sidebar-foot { margin-top: auto; display: grid; gap: var(--space-3); justify-items: center; padding-top: var(--space-3); border-top: 1px solid var(--border-soft); }
+    .sidebar-foot .nav-row { width: 100%; }
+
+    /* Home: composer at ~40% height, 640 column */
+    .home { flex: 1; display: grid; place-items: center; padding: var(--space-8) var(--space-8) 10vh; }
+    .home-inner { width: 100%; max-width: var(--home-width); display: grid; gap: var(--space-6); }
+    .home h1 { font-family: var(--font-serif); font-size: var(--text-2xl); line-height: 42px; font-weight: var(--weight-serif-regular); letter-spacing: -0.02em; text-align: center; text-wrap: balance; }
+    .home .composer textarea { min-height: 64px; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; }
+
+    /* Answer: 720 thread + 336 rail */
+    .answer-wrap { flex: 1; display: grid; grid-template-columns: minmax(0, var(--thread-width)) var(--rail-width); justify-content: center; gap: var(--space-16); padding: 0 var(--space-8) 180px; }
+    .answer-wrap .thread { padding-top: var(--space-6); }
+    .rail { padding-top: var(--space-4); }
+    .rail .sources-panel { position: sticky; top: calc(var(--header-height) + var(--space-4)); padding: var(--space-2); }
+    .rail-head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-2); font-size: var(--text-sm); color: var(--fg-secondary); }
+    .rail .list { gap: 0; }
+    .answer-body { margin-top: var(--space-4); }
+    .actions-spacer { flex: 1; }
+    .dock { position: fixed; bottom: 0; left: var(--sidebar-width); right: 0; padding: 0 var(--space-8) var(--space-6); background: linear-gradient(to top, var(--bg-base) 70%, transparent); pointer-events: none; } /* lint-allow: fade under the docked composer */
+    .dock .composer { max-width: var(--thread-width); margin-left: max(0px, calc((100% - var(--thread-width) - var(--rail-width) - var(--space-16)) / 2)); pointer-events: auto; }
+
+    /* Answer header: tabs line up with the thread, actions with the rail */
+    .answer-header { display: grid; grid-template-columns: minmax(0, var(--thread-width)) var(--rail-width); justify-content: center; gap: var(--space-16); padding: 0 var(--space-8); }
+    .answer-header .header-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-2); }
+    .header-title { font-size: var(--text-sm); font-weight: var(--weight-medium); }
+    .header-spacer { flex: 1; }
+    .mobile-only { display: none; }
+
+    [hidden] { display: none !important; }
+
+    /* Phone: no sidebar, 56 top bar, docked composer at 10px inset, radius 26 */
+    @media (max-width: 1024px) {
+      .answer-wrap, .answer-header { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4); padding: 0 var(--space-6) 180px; }
+      .answer-wrap { grid-template-columns: minmax(0, 1fr); }
+      .answer-header { padding: 0 var(--space-6); }
+      .rail { display: none; }
+      .dock { left: 0; }
+      .dock .composer { margin: 0 auto; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .mobile-only { display: inline-flex; }
+      .home { padding: var(--space-6) var(--page-gutter) 10vh; }
+      .answer-wrap { padding: 0 var(--page-gutter) 160px; }
+      .answer-header { padding: 0 var(--page-gutter); grid-template-columns: auto minmax(0, 1fr) auto; }
+      .dock { padding: 0 10px 10px; }
+      .dock .composer { border-radius: 26px; }
+      .tabs .tab-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Icon sprite: lucide paths, drawn at 1.75 stroke by .icon -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></symbol>
+    <symbol id="i-library" viewBox="0 0 24 24"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M7 10v12"/><path d="M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 8a2 2 0 0 1-1.9 1.4H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9Z"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M17 14V2"/><path d="M9 18.1 10 14H4.2a2 2 0 0 1-1.9-2.6l2.3-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.8a2 2 0 0 0-1.8 1.1L12 22a3.1 3.1 0 0 1-3-3.9Z"/></symbol>
+    <symbol id="i-follow" viewBox="0 0 24 24"><path d="m15 10 5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-landmark" viewBox="0 0 24 24"><path d="M3 22h18"/><path d="M6 18v-7M10 18v-7M14 18v-7M18 18v-7"/><path d="M12 2 20 7H4z"/></symbol>
+    <!-- Placeholder product mark. Never ship Perplexity's logo. -->
+    <symbol id="i-mark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></symbol>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar" aria-label="Sidebar">
+      <div class="sidebar-top">
+        <a class="brand" href="#"><svg class="icon"><use href="#i-mark" /></svg>acme</a>
+        <button class="btn btn-icon" aria-label="Collapse sidebar"><svg class="icon"><use href="#i-panel" /></svg></button>
+      </div>
+      <nav aria-label="Main">
+        <a class="nav-row" href="#" data-go="home"><svg class="icon"><use href="#i-plus" /></svg>New</a>
+        <a class="nav-row" href="#"><svg class="icon"><use href="#i-compass" /></svg>Discover</a>
+        <a class="nav-row" href="#"><svg class="icon"><use href="#i-library" /></svg>Library</a>
+      </nav>
+      <div class="nav-section">Recents<svg class="icon"><use href="#i-chevron" /></svg></div>
+      <nav aria-label="Recent threads">
+        <a class="nav-row" href="#" data-go="answer">How do tides work?</a>
+        <a class="nav-row" href="#">Best laptops for video editing</a>
+        <a class="nav-row" href="#">Explain transformer attention</a>
+      </nav>
+      <div class="sidebar-foot">
+        <button class="pill-xs">View plans</button>
+        <button class="nav-row" data-theme-toggle><svg class="icon"><use href="#i-sun" /></svg>Theme</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <!-- ============ HOME ============ -->
+      <section id="home" class="home" aria-label="Home">
+        <header class="page-header mobile-only" style="position:fixed;inset:0 0 auto 0">
+          <button class="btn btn-icon" aria-label="Menu"><svg class="icon"><use href="#i-menu" /></svg></button>
+          <span class="brand"><svg class="icon"><use href="#i-mark" /></svg>acme</span>
+        </header>
+        <div class="home-inner">
+          <h1>What do you want to know?</h1>
+          <form class="composer" data-ask>
+            <label class="sr-only" for="ask">Ask anything</label>
+            <textarea id="ask" rows="2" placeholder="Ask anything…"></textarea>
+            <div class="composer-toolbar">
+              <button type="button" class="btn btn-icon" aria-label="Attach"><svg class="icon"><use href="#i-plus" /></svg></button>
+              <div class="segmented" role="group" aria-label="Mode">
+                <button type="button" aria-pressed="true"><svg class="icon"><use href="#i-search" /></svg>Search</button>
+                <button type="button" aria-pressed="false"><svg class="icon"><use href="#i-compass" /></svg>Research</button>
+              </div>
+              <span class="spacer"></span>
+              <button type="button" class="btn btn-ghost">Model<svg class="icon"><use href="#i-chevron" /></svg></button>
+              <button type="button" class="btn btn-icon" aria-label="Dictate"><svg class="icon"><use href="#i-mic" /></svg></button>
+              <button class="composer-submit" aria-label="Submit" disabled><svg class="icon"><use href="#i-arrow-up" /></svg></button>
+            </div>
+          </form>
+          <div class="suggestions">
+            <button class="chip" data-go="answer"><svg class="icon"><use href="#i-globe" /></svg>How do tides work?</button>
+            <button class="chip"><svg class="icon"><use href="#i-search" /></svg>Compare index funds</button>
+            <button class="chip"><svg class="icon"><use href="#i-compass" /></svg>Plan 3 days in Lisbon</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ANSWER ============ -->
+      <section id="answer" aria-label="Answer" hidden>
+        <header class="page-header answer-header">
+          <button class="btn btn-icon mobile-only" aria-label="Menu"><svg class="icon"><use href="#i-menu" /></svg></button>
+          <div class="tabs" role="tablist">
+            <button class="tab" role="tab" aria-selected="true"><svg class="icon"><use href="#i-mark" /></svg><span class="tab-label">Answer</span></button>
+            <button class="tab" role="tab" aria-selected="false"><svg class="icon"><use href="#i-globe" /></svg><span class="tab-label">Links</span></button>
+            <button class="tab" role="tab" aria-selected="false"><svg class="icon"><use href="#i-image" /></svg><span class="tab-label">Images</span></button>
+            <span class="tab-indicator" aria-hidden="true"></span>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-icon" aria-label="More"><svg class="icon"><use href="#i-more" /></svg></button>
+            <button class="btn btn-primary"><svg class="icon"><use href="#i-share" /></svg>Share</button>
+          </div>
+        </header>
+
+        <div class="answer-wrap">
+          <article class="thread">
+            <p class="query-bubble">How do tides work?</p>
+            <p class="status-row"><span class="label">Researched 8 sources</span></p>
+
+            <div class="prose answer-body animate-in">
+              <p>Tides are the regular rise and fall of the sea, driven mostly by the Moon's gravity and, to a lesser degree, the Sun's. Because the pull is uneven across Earth, the oceans stretch into two bulges, and coastlines rotate through them each day.<a class="cite" href="#"><svg class="icon"><use href="#i-landmark" /></svg>oceanservice.noaa<span class="more">+1</span></a></p>
+              <h2>Why there are two high tides a day</h2>
+              <p>The Moon pulls hardest on the near side of Earth and least on the far side. That difference, the <strong>tidal force</strong>, raises one bulge facing the Moon and another opposite it.<a class="cite" href="#">britannica</a></p>
+              <ul>
+                <li><strong>High tide</strong> happens when your coast passes under a bulge.</li>
+                <li><strong>Low tide</strong> happens between the bulges.</li>
+                <li>Most places see two of each roughly every 24 hours and 50 minutes.<a class="cite" href="#"><svg class="icon"><use href="#i-landmark" /></svg>nesdis.noaa</a></li>
+              </ul>
+              <h2>Spring and neap tides</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Tide</th><th>Sun–Moon alignment</th><th>Range</th></tr></thead>
+                  <tbody>
+                    <tr><td>Spring</td><td>New or full Moon, aligned</td><td>Largest</td></tr>
+                    <tr><td>Neap</td><td>Quarter Moon, at right angles</td><td>Smallest</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="answer-actions">
+              <button class="sources-pill"><span class="favicons"><i></i><i></i><i></i></span>8 sources</button>
+              <span class="actions-spacer"></span>
+              <button class="btn btn-icon" aria-label="Copy"><svg class="icon"><use href="#i-copy" /></svg></button>
+              <button class="btn btn-icon" aria-label="Helpful"><svg class="icon"><use href="#i-up" /></svg></button>
+              <button class="btn btn-icon" aria-label="Not helpful"><svg class="icon"><use href="#i-down" /></svg></button>
+              <button class="btn btn-icon" aria-label="More"><svg class="icon"><use href="#i-more" /></svg></button>
+            </div>
+
+            <div class="followups animate-in" aria-label="Follow-up questions">
+              <button class="followup"><svg class="icon"><use href="#i-follow" /></svg>Why are tides bigger in some places?</button>
+              <button class="followup"><svg class="icon"><use href="#i-follow" /></svg>How do tide tables predict the times?</button>
+              <button class="followup"><svg class="icon"><use href="#i-follow" /></svg>Does the Sun cause tides on its own?</button>
+            </div>
+          </article>
+
+          <aside class="rail" aria-label="Sources">
+            <div class="sources-panel">
+              <div class="rail-head">Sources<span>8</span></div>
+              <div class="list">
+                <a class="source-item" href="#">
+                  <span class="source-domain"><span class="favicons"><i></i></span>oceanservice.noaa.gov</span>
+                  <span class="source-title">What causes tides? Tides and Water Levels</span>
+                  <span class="source-snippet">The gravitational pull of the Moon and Sun and the rotation of the Earth together cause the tides.</span>
+                </a>
+                <a class="source-item" href="#">
+                  <span class="source-domain"><span class="favicons"><i></i></span>britannica.com</span>
+                  <span class="source-title">Tide | Definition, Causes, Types, &amp; Facts</span>
+                  <span class="source-snippet">Tide, any of the cyclic deformations of one astronomical body caused by the gravitational forces of another.</span>
+                </a>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="dock">
+          <form class="composer" data-ask>
+            <label class="sr-only" for="follow">Ask a follow-up</label>
+            <textarea id="follow" rows="1" placeholder="Ask a follow-up"></textarea>
+            <div class="composer-toolbar">
+              <button type="button" class="btn btn-icon" aria-label="Attach"><svg class="icon"><use href="#i-plus" /></svg></button>
+              <span class="spacer"></span>
+              <button type="button" class="btn btn-icon" aria-label="Dictate"><svg class="icon"><use href="#i-mic" /></svg></button>
+              <button class="composer-submit" aria-label="Submit" disabled><svg class="icon"><use href="#i-arrow-up" /></svg></button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Switch views
+    const views = { home: document.getElementById("home"), answer: document.getElementById("answer") };
+    const show = (name) => {
+      for (const [k, el] of Object.entries(views)) el.hidden = k !== name;
+      if (name === "answer") moveIndicator();
+    };
+    document.querySelectorAll("[data-go]").forEach((el) => el.addEventListener("click", (e) => { e.preventDefault(); show(el.dataset.go); }));
+    document.querySelectorAll("[data-ask]").forEach((form) => {
+      const ta = form.querySelector("textarea");
+      const submit = form.querySelector(".composer-submit");
+      ta.addEventListener("input", () => { submit.disabled = !ta.value.trim(); });
+      ta.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (ta.value.trim()) form.requestSubmit(); } });
+      form.addEventListener("submit", (e) => { e.preventDefault(); ta.value = ""; submit.disabled = true; show("answer"); });
+    });
+
+    // Segmented control and tabs
+    document.querySelectorAll(".segmented").forEach((g) => g.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      g.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    }));
+    const tabs = document.querySelector(".tabs");
+    function moveIndicator() {
+      const active = tabs.querySelector('[aria-selected="true"]');
+      const bar = tabs.querySelector(".tab-indicator");
+      bar.style.width = active.offsetWidth + "px";
+      bar.style.transform = `translateX(${active.offsetLeft}px)`;
+    }
+    tabs.addEventListener("click", (e) => {
+      const t = e.target.closest(".tab"); if (!t) return;
+      tabs.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
+      moveIndicator();
+    });
+    addEventListener("resize", moveIndicator);
+
+    // Theme: follows the OS until toggled
+    document.querySelector("[data-theme-toggle]").addEventListener("click", () => {
+      const root = document.documentElement;
+      const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      root.dataset.theme = dark ? "light" : "dark";
+    });
+  </script>
+</body>
+</html>
